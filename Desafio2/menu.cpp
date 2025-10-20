@@ -26,7 +26,7 @@ string* menuIngresoUsuario(){
         cout << "Ingrese su usuario: ";
         cin >> usuario;
         registro[0] = usuario;
-        cout << "Ingrese su contraseña: ";
+        cout << "Ingrese su contrasena: ";
         cin >> contrasena;
         registro[1] = contrasena;
         cout << endl;
@@ -64,12 +64,12 @@ int menuIngresoPremium(){
 
 int menuFuncionesPremium(){
     int opcion;
-    cout << "1. Cancion anterior.";
-    cout << "2. Repetir de manera indefinida.";
-    cout << "3. Pausar.";
-    cout << "4, Cancion siguiente.";
-    cout << "5. Agregar cancion a favorito.";
-    cout << "6. Volver a menu anterior.";
+    cout << "1. Cancion anterior." << endl;
+    cout << "2. Repetir de manera indefinida." << endl;
+    cout << "3. Pausar." << endl;
+    cout << "4, Cancion siguiente." << endl;
+    cout << "5. Agregar cancion a favorito." << endl;
+    cout << "6. Volver a menu anterior." << endl;
     while (!(cin >> opcion) || opcion < 1 || opcion > 6) {
         cout << "Entrada invalida. Ingrese un numero entre 1 y 3: ";
         cin.clear();
