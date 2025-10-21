@@ -10,5 +10,6 @@ string* menuIngresoUsuario();
 int menuIngresoPremium();
 int menuFuncionesPremium();
 int menuFuncionesNoPremium();
+long menuBuscarCancion();
 
 #endif // MENU_H

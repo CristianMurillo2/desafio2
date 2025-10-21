@@ -1,5 +1,6 @@
 #include "menu.h"
 #include "usuario.h"
+#include "canciones.h"
 
 int main()
 {
@@ -36,8 +37,20 @@ while(ingreso1 == true){
                     //va de 1 a 6 segun lo que se necesite, retroceder,repetir de manera infinita, pausar, cancion siguiente, agregar a favorito,
                 }
                 else if(opcionUsuPremium == 2){
-                    cout << "Lista de canciones." << endl;
-                    //Muestra canciones y se toma el numero
+                    canciones gestorCanciones;
+                    long idCancion = menuBuscarCancion();
+                    cout << endl << endl << idCancion << endl << endl;
+                    string* datosCancion = gestorCanciones.buscarCancionPorID(idCancion, esPremium);
+                    if (datosCancion != nullptr) {
+                        cout << "--- Reproduciendo ---" << endl;
+                        cout << "ID: " << datosCancion[0] << endl;
+                        cout << "Nombre: " << datosCancion[1] << endl;
+                        cout << "Duracion: " << datosCancion[2] << endl;
+                        cout << "Ruta Audio: " << datosCancion[3] << endl << endl;
+                        delete[] datosCancion;
+                        datosCancion = nullptr;
+                    }
+                    system("pause");
                 }
                 else if(opcionUsuPremium == 3){
                     cout << "Reproduciendo playlist favorita" << endl;
@@ -53,6 +66,7 @@ while(ingreso1 == true){
                 else if(opcionUsuPremium == 6){
                     cout << "Volviendo al menu anterior..." << endl;
                     ingreso2 = false;
+
                 }
             }
         }
@@ -72,6 +86,7 @@ while(ingreso1 == true){
             }
         }
     }
+
     else if(opcionIngreso == 2){
         cout << endl <<"Esta opcion esta siendo desarrollada y estara disponible muy pronto." << endl;
     }

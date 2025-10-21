@@ -92,3 +92,15 @@ int menuFuncionesNoPremium(){
     return opcion;
 }
 
+long menuBuscarCancion(){
+    long idCancion;
+    cout << "Ingrese el ID de la cancion que desea buscar: ";
+    cin >> idCancion;
+    while(!cin >> idCancion){
+        cout << "Entrada invalida. Ingrese un codigo ID valido: ";
+        cin.clear();
+        cin.ignore(255, '\n');
+    }
+    return idCancion;
+}
+

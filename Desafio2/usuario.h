@@ -9,7 +9,7 @@ class Usuario {
 private:
     string nombre;
     string contrasena;
-    int premium; // 1 o 0
+    int premium;
 
 public:
     Usuario();
@@ -23,15 +23,15 @@ public:
 
 class LecturaUsuario {
 private:
-    Usuario* usuarios; // arreglo dinámico
-    int cantidad;      // número de usuarios cargados
+    Usuario* usuarios;
+    int cantidad;
 
 public:
     LecturaUsuario();
     ~LecturaUsuario();
 
     void cargarDesdeArchivo(const string& nombreArchivo);
-    int verificarUsuario(const string* datos); // retorna 1, 0 o -1 si no existe
+    int verificarUsuario(const string* datos);
 };
 
 #endif
