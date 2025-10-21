@@ -11,6 +11,7 @@ public:
     ~canciones();
 
     string* buscarCancionPorID(long idBuscado, int esPremium);
+    long obtenerIdCancionAleatoria();
 };
 
 #endif // CANCIONES_H

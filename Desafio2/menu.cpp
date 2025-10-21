@@ -70,8 +70,9 @@ int menuFuncionesPremium(){
     cout << "4, Cancion siguiente." << endl;
     cout << "5. Agregar cancion a favorito." << endl;
     cout << "6. Volver a menu anterior." << endl;
+    cout << "Ingresa una opcion: ";
     while (!(cin >> opcion) || opcion < 1 || opcion > 6) {
-        cout << "Entrada invalida. Ingrese un numero entre 1 y 3: ";
+        cout << "Entrada invalida. Ingrese un numero entre 1 y 6: ";
         cin.clear();
         cin.ignore(255, '\n');
     }
@@ -95,8 +96,7 @@ int menuFuncionesNoPremium(){
 long menuBuscarCancion(){
     long idCancion;
     cout << "Ingrese el ID de la cancion que desea buscar: ";
-    cin >> idCancion;
-    while(!cin >> idCancion){
+    while(!(cin >> idCancion)){
         cout << "Entrada invalida. Ingrese un codigo ID valido: ";
         cin.clear();
         cin.ignore(255, '\n');

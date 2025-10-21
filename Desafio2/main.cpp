@@ -1,7 +1,8 @@
 #include "menu.h"
 #include "usuario.h"
 #include "canciones.h"
-
+#include <cstdlib>
+#include <ctime>
 int main()
 {
 
@@ -30,11 +31,28 @@ while(ingreso1 == true){
         }
         if(esPremium == 1){
             while(ingreso2 == true){
+                cout << endl << endl << "--- ERES USUARIO PREMIUM ---" << endl << endl;
                 int opcionUsuPremium = menuIngresoPremium();
                 if(opcionUsuPremium == 1){
-                    cout << "Reproduciendo canciones aleatoria." << endl;
-                    int opcionReproPremium = menuFuncionesPremium();
-                    //va de 1 a 6 segun lo que se necesite, retroceder,repetir de manera infinita, pausar, cancion siguiente, agregar a favorito,
+                    srand(time(0));
+                    canciones gestorCanciones;
+                    long idAleatorio = gestorCanciones.obtenerIdCancionAleatoria();
+                    if (idAleatorio != -1) {
+                        string* datosCancion = gestorCanciones.buscarCancionPorID(idAleatorio, esPremium);
+                        if (datosCancion != nullptr) {
+                            cout << "--- Reproduciendo Aleatoriamente ---" << endl;
+                            cout << "ID: " << datosCancion[0] << endl;
+                            cout << "Nombre: " << datosCancion[1] << endl;
+                            cout << "Duracion: " << datosCancion[2] << endl;
+                            cout << "Ruta Audio: " << datosCancion[3] << endl << endl;
+
+
+                            int opcionReproPremium = menuFuncionesPremium();
+                            //va de 1 a 6 segun lo que se necesite, retroceder,repetir de manera infinita, pausar, cancion siguiente, agregar a favorito,
+
+                            delete[] datosCancion; // Liberamos memoria
+                        }
+                    }
                 }
                 else if(opcionUsuPremium == 2){
                     canciones gestorCanciones;
@@ -72,10 +90,28 @@ while(ingreso1 == true){
         }
         else if (esPremium == 0){
             while(ingreso2 == true){
+                cout << endl << endl << "--- ERES USUARIO ESTANDAR ---" << endl << endl;
                 int opcionUsuNoPremium = menuFuncionesNoPremium();
                 if(opcionUsuNoPremium == 1){
-                    cout << "Reproduciendo canciones aleatorias" << endl;
-                    //funciones aleatorias
+                    srand(time(0));
+                    canciones gestorCanciones;
+                    long idAleatorio = gestorCanciones.obtenerIdCancionAleatoria();
+                    if (idAleatorio != -1) {
+                        string* datosCancion = gestorCanciones.buscarCancionPorID(idAleatorio, esPremium);
+                        if (datosCancion != nullptr) {
+                            cout << endl << "--- Reproduciendo Aleatoriamente ---" << endl;
+                            cout << "ID: " << datosCancion[0] << endl;
+                            cout << "Nombre: " << datosCancion[1] << endl;
+                            cout << "Duracion: " << datosCancion[2] << endl;
+                            cout << "Ruta Audio: " << datosCancion[3] << endl << endl;
+
+
+                            int opcionReproPremium = menuFuncionesPremium();
+                            //va de 1 a 6 segun lo que se necesite, retroceder,repetir de manera infinita, pausar, cancion siguiente, agregar a favorito,
+
+                                delete[] datosCancion; // Liberamos memoria
+                        }
+                    }
                 }
                 else if(opcionUsuNoPremium == 2){
                     cout << endl << "Esta opcion esta siendo desarrollada y estara disponible muy pronto." << endl << endl;

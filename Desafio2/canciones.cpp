@@ -79,3 +79,62 @@ string* canciones::buscarCancionPorID(long idBuscado, int esPremium) {
         return nullptr;
     }
 }
+
+long canciones::obtenerIdCancionAleatoria() {
+
+    ifstream archivo("canciones.txt");
+
+    if (!archivo.is_open()) {
+        cout << "Error: No se pudo abrir canciones.txt para modo aleatorio." << endl;
+        return -1;
+    }
+
+    int totalCanciones = 0;
+    string linea;
+
+    while (getline(archivo, linea)) {
+        if (!linea.empty() && linea.find(';') != string::npos) {
+            totalCanciones++;
+        }
+    }
+
+    if (totalCanciones == 0) {
+        cout << "No hay canciones en el archivo." << endl;
+        archivo.close();
+        return -1;
+    }
+
+    long* arregloDeIds = new long[totalCanciones];
+    archivo.clear();
+    archivo.seekg(0);
+
+    int cancionesCargadas = 0;
+
+    while (getline(archivo, linea) && cancionesCargadas < totalCanciones) {
+        if (linea.empty()) continue;
+
+        int pos1 = linea.find(';');
+        if (pos1 == string::npos) continue;
+
+        string idStr = linea.substr(0, pos1);
+
+        try {
+            arregloDeIds[cancionesCargadas] = stoll(idStr);
+            cancionesCargadas++;
+        } catch (...) {
+        }
+    }
+
+    archivo.close();
+
+    if (cancionesCargadas == 0) {
+        cout << "Error: No se pudieron cargar IDs validos." << endl;
+        delete[] arregloDeIds;
+        return -1;
+    }
+
+    int indiceAleatorio = rand() % cancionesCargadas;
+    long idSeleccionado = arregloDeIds[indiceAleatorio];
+    delete[] arregloDeIds;
+    return idSeleccionado;
+}
