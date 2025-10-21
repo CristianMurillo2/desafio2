@@ -1,6 +1,9 @@
 #include "Anuncio.h"
 #include <iostream>
 #include <random>
+#include <fstream>
+#include <sstream>
+
 
 Anuncio::Anuncio() {
     id = 0;
@@ -92,4 +95,41 @@ Anuncio* Anuncio::seleccionarAleatorio(Anuncio* lista, int total, int& ultimoMos
 
     ultimoMostrado = indice;
     return &lista[indice];
+}
+
+void Anuncio::guardarEnArchivo(const std::string& nombreArchivo) const {
+    std::ofstream archivo(nombreArchivo, std::ios::app);
+    if (!archivo.is_open()) return;
+    archivo << id << ';'
+            << categoria << ';'
+            << prioridad << ';'
+            << texto << '\n';
+    archivo.close();
+}
+
+Anuncio* Anuncio::cargarDesdeArchivo(const std::string& nombreArchivo, int& totalAnuncios) {
+    std::ifstream archivo(nombreArchivo);
+    if (!archivo.is_open()) {
+        totalAnuncios = 0;
+        return nullptr;
+    }
+    totalAnuncios = 0;
+    std::string linea;
+    while (std::getline(archivo, linea))
+        totalAnuncios++;
+    archivo.clear();
+    archivo.seekg(0);
+    Anuncio* lista = new Anuncio[totalAnuncios];
+    int i = 0;
+    while (std::getline(archivo, linea)) {
+        std::stringstream ss(linea);
+        std::string parte;
+        std::getline(ss, parte, ';'); lista[i].setId(std::stoi(parte));
+        std::getline(ss, parte, ';'); lista[i].setCategoria(parte[0]);
+        std::getline(ss, parte, ';'); lista[i].setPrioridad(std::stoi(parte));
+        std::getline(ss, parte, '\n'); lista[i].setTexto(parte);
+        i++;
+    }
+    archivo.close();
+    return lista;
 }

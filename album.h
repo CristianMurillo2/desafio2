@@ -49,11 +49,12 @@ public:
     void setGenero(int i, const std::string& genero);
 
     int getNumCanciones() const;
-
     bool agregarCancion(Cancion* c);
     Cancion* buscarCancion(int id) const;
     float calcularDuracionTotal() const;
     void mostrarInfo() const;
+    void guardarEnArchivo(const std::string& nombreArchivo) const;
+    static Album* cargarDesdeArchivo(const std::string& nombreArchivo, int& totalAlbums);
 };
 
 #endif

@@ -1,5 +1,8 @@
 #include "Album.h"
 #include <iostream>
+#include <fstream>
+#include <sstream>
+
 
 Album::Album() {
     idAlbum = 0;
@@ -153,4 +156,58 @@ void Album::mostrarInfo() const {
         canciones[i]->mostrarInfo();
     }
     std::cout << "-----------------------------------\n";
+}
+void Album::guardarEnArchivo(const std::string& nombreArchivo) const {
+    std::ofstream archivo(nombreArchivo, std::ios::app);
+    if (!archivo.is_open()) return;
+    archivo << idAlbum << ';'
+            << idArtista << ';'
+            << nombre << ';'
+            << fechaLanzamiento << ';'
+            << sello << ';'
+            << portada << ';'
+            << puntuacion << ';';
+    for (int i = 0; i < 4; i++) {
+        archivo << generos[i];
+        if (i < 3) archivo << ',';
+    }
+    archivo << ';' << numCanciones << '\n';
+    archivo.close();
+}
+
+Album* Album::cargarDesdeArchivo(const std::string& nombreArchivo, int& totalAlbums) {
+    std::ifstream archivo(nombreArchivo);
+    if (!archivo.is_open()) {
+        totalAlbums = 0;
+        return nullptr;
+    }
+    totalAlbums = 0;
+    std::string linea;
+    while (std::getline(archivo, linea))
+        totalAlbums++;
+    archivo.clear();
+    archivo.seekg(0);
+    Album* lista = new Album[totalAlbums];
+    int i = 0;
+    while (std::getline(archivo, linea)) {
+        std::stringstream ss(linea);
+        std::string parte, generosStr;
+        std::getline(ss, parte, ';'); lista[i].setIdAlbum(std::stoi(parte));
+        std::getline(ss, parte, ';'); lista[i].setIdArtista(std::stoi(parte));
+        std::getline(ss, parte, ';'); lista[i].setNombre(parte);
+        std::getline(ss, parte, ';'); lista[i].setFechaLanzamiento(parte);
+        std::getline(ss, parte, ';'); lista[i].setSello(parte);
+        std::getline(ss, parte, ';'); lista[i].setPortada(parte);
+        std::getline(ss, parte, ';'); lista[i].setPuntuacion(std::stof(parte));
+        std::getline(ss, generosStr, ';');
+        std::stringstream sg(generosStr);
+        for (int g = 0; g < 4; g++) {
+            if (std::getline(sg, parte, ',')) lista[i].setGenero(g, parte);
+            else lista[i].setGenero(g, "N/A");
+        }
+        std::getline(ss, parte, '\n');
+        i++;
+    }
+    archivo.close();
+    return lista;
 }

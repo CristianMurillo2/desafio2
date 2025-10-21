@@ -31,6 +31,9 @@ public:
     void mostrar() const;
     Cancion* siguiente();
     Cancion* anterior();
+    void guardarEnArchivo(const std::string& nombreArchivo) const;
+    static Playlist cargarDesdeArchivo(const std::string& nombreArchivo);
+
 };
 
 #endif

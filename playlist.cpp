@@ -1,5 +1,8 @@
 #include "Playlist.h"
 #include <iostream>
+#include "Album.h"
+#include <fstream>
+#include <sstream>
 
 Playlist::Playlist() {
     nombre = "Sin nombre";
@@ -134,4 +137,40 @@ Cancion* Playlist::anterior() {
     indiceActual = indicePrevio;
     cancionesEnHistorial--;
     return canciones[indiceActual];
+}
+void Playlist::guardarEnArchivo(const std::string& nombreArchivo) const {
+    std::ofstream archivo(nombreArchivo);
+    if (!archivo.is_open()) return;
+    for (int i = 0; i < numCanciones; i++) {
+        Cancion* c = canciones[i];
+        archivo << c->getIdCancion() << ';'
+                << c->getNombre() << ';'
+                << c->getDuracion() << ';'
+                << c->getRuta128() << ';'
+                << c->getRuta320() << '\n';
+    }
+    archivo.close();
+}
+
+Playlist Playlist::cargarDesdeArchivo(const std::string& nombreArchivo) {
+    Playlist lista("Favoritos", 10000);
+    std::ifstream archivo(nombreArchivo);
+    if (!archivo.is_open()) return lista;
+    std::string linea, parte;
+    while (std::getline(archivo, linea)) {
+        std::stringstream ss(linea);
+        int id;
+        std::string nombre, ruta128, ruta320;
+        float duracion;
+        std::getline(ss, parte, ';'); id = std::stoi(parte);
+        std::getline(ss, nombre, ';');
+        std::getline(ss, parte, ';'); duracion = std::stof(parte);
+        std::getline(ss, ruta128, ';');
+        std::getline(ss, ruta320, '\n');
+        Cancion* c = new Cancion(id, nombre, duracion, ruta128, ruta320);
+        lista.agregarCancion(c);
+    }
+    archivo.close();
+    return lista;
+
 }

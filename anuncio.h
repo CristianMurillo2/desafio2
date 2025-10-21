@@ -14,7 +14,6 @@ public:
     Anuncio();
     Anuncio(int id, const std::string& texto, char categoria);
     Anuncio(const Anuncio& otro);
-
     ~Anuncio();
 
     Anuncio& operator=(const Anuncio& otro);
@@ -34,6 +33,9 @@ public:
     void mostrar() const;
 
     static Anuncio* seleccionarAleatorio(Anuncio* lista, int total, int& ultimoMostrado);
+
+    void guardarEnArchivo(const std::string& nombreArchivo) const;
+    static Anuncio* cargarDesdeArchivo(const std::string& nombreArchivo, int& totalAnuncios);
 };
 
 #endif
