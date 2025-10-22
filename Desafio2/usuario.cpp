@@ -1,5 +1,35 @@
 #include "usuario.h"
 
+string Usuario::getNombre() const
+{
+    return nombre;
+}
+
+void Usuario::setNombre(const string &newNombre)
+{
+    nombre = newNombre;
+}
+
+void Usuario::setContrasena(const string &newContrasena)
+{
+    contrasena = newContrasena;
+}
+
+string Usuario::getContrasena() const
+{
+    return contrasena;
+}
+
+int Usuario::getPremium() const
+{
+    return premium;
+}
+
+void Usuario::setPremium(int newPremium)
+{
+    premium = newPremium;
+}
+
 Usuario::Usuario() {
     nombre = "";
     contrasena = "";

@@ -19,6 +19,12 @@ public:
     string obtenerNombre();
     string obtenerContrasena();
     int obtenerPremium();
+    string getNombre() const;
+    void setNombre(const string &newNombre);
+    void setContrasena(const string &newContrasena);
+    string getContrasena() const;
+    int getPremium() const;
+    void setPremium(int newPremium);
 };
 
 class LecturaUsuario {

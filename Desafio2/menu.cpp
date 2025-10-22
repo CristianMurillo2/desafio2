@@ -31,8 +31,6 @@ string* menuIngresoUsuario(){
         registro[1] = contrasena;
         cout << endl;
 
-        //verificacion de usuario
-
         bool verificacionUsuario = true;
         if(verificacionUsuario == true){
             return registro;
@@ -103,4 +101,3 @@ long menuBuscarCancion(){
     }
     return idCancion;
 }
-
