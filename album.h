@@ -2,59 +2,69 @@
 #define ALBUM_H
 
 #include <string>
-#include "Cancion.h"
+#include "cancion.h"
 
 class Album {
 private:
-    int idAlbum;
-    int idArtista;
+    long idAlbum;
+    long idArtista;
     std::string nombre;
     std::string fechaLanzamiento;
     std::string sello;
     std::string portada;
     float puntuacion;
     std::string generos[4];
-    Cancion** canciones;
+
+    long* cancionesIDs;
     int numCanciones;
     int maxCanciones;
 
-public:
-    Album();
-    Album(int idAlbum, int idArtista, const std::string& nombre, int capacidad);
+public:    Album();
+    Album(long idAlbum, long idArtista, const std::string& nombre, int capacidad);
     Album(const Album& otro);
     ~Album();
-    Album& operator=(const Album& otro);
-    int getIdAlbum() const;
-    void setIdAlbum(int id);
 
-    int getIdArtista() const;
-    void setIdArtista(int id);
+    Album& operator=(const Album& otro);
+        long getIdAlbum() const;
+    void setIdAlbum(long id);
+
+    long getIdArtista() const;
+    void setIdArtista(long id);
 
     std::string getNombre() const;
-    void setNombre(const std::string& nombre);
+    void setNombre(const std::string& n);
 
     std::string getFechaLanzamiento() const;
-    void setFechaLanzamiento(const std::string& fecha);
+    void setFechaLanzamiento(const std::string& f);
 
     std::string getSello() const;
-    void setSello(const std::string& sello);
+    void setSello(const std::string& s);
 
     std::string getPortada() const;
-    void setPortada(const std::string& portada);
+    void setPortada(const std::string& p);
 
     float getPuntuacion() const;
-    void setPuntuacion(float puntuacion);
+    void setPuntuacion(float p);
 
     std::string getGenero(int i) const;
-    void setGenero(int i, const std::string& genero);
+    void setGenero(int i, const std::string& g);
 
     int getNumCanciones() const;
-    bool agregarCancion(Cancion* c);
-    Cancion* buscarCancion(int id) const;
-    float calcularDuracionTotal() const;
-    void mostrarInfo() const;
+    int getMaxCanciones() const;
+
+    long getCancionID(int i) const;
+    void setCancionID(int i, long id);
+
+    // --- Funcionalidad ---
+    bool agregarCancion(long idCancion);
+    bool eliminarCancion(long idCancion);
+    void mostrar(int esPremium) const;
+    float calcularDuracionTotal(int esPremium) const;
+
+    // --- Persistencia ---
     void guardarEnArchivo(const std::string& nombreArchivo) const;
-    static Album* cargarDesdeArchivo(const std::string& nombreArchivo, int& totalAlbums);
+    static Album cargarDesdeArchivo(const std::string& nombreArchivo, int capacidad);
 };
 
 #endif
+

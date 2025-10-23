@@ -1,9 +1,10 @@
-#include "Album.h"
+#include "album.h"
 #include <iostream>
 #include <fstream>
-#include <sstream>
+#include <cancion.h>
+using namespace std;
 
-
+// --- Constructores ---
 Album::Album() {
     idAlbum = 0;
     idArtista = 0;
@@ -14,11 +15,12 @@ Album::Album() {
     puntuacion = 0.0f;
     numCanciones = 0;
     maxCanciones = 20;
-    canciones = new Cancion*[maxCanciones];
-    for (int i = 0; i < 4; i++) generos[i] = "N/A";
+    cancionesIDs = new long[maxCanciones];
+    for (int i = 0; i < 4; i++)
+        generos[i] = "N/A";
 }
 
-Album::Album(int idAlbum, int idArtista, const std::string& nombre, int capacidad) {
+Album::Album(long idAlbum, long idArtista, const std::string& nombre, int capacidad) {
     this->idAlbum = idAlbum;
     this->idArtista = idArtista;
     this->nombre = nombre;
@@ -28,8 +30,9 @@ Album::Album(int idAlbum, int idArtista, const std::string& nombre, int capacida
     puntuacion = 0.0f;
     numCanciones = 0;
     maxCanciones = capacidad > 0 ? capacidad : 20;
-    canciones = new Cancion*[maxCanciones];
-    for (int i = 0; i < 4; i++) generos[i] = "N/A";
+    cancionesIDs = new long[maxCanciones];
+    for (int i = 0; i < 4; i++)
+        generos[i] = "N/A";
 }
 
 Album::Album(const Album& otro) {
@@ -43,22 +46,21 @@ Album::Album(const Album& otro) {
     numCanciones = otro.numCanciones;
     maxCanciones = otro.maxCanciones;
 
+    cancionesIDs = new long[maxCanciones];
+    for (int i = 0; i < numCanciones; i++)
+        cancionesIDs[i] = otro.cancionesIDs[i];
     for (int i = 0; i < 4; i++)
         generos[i] = otro.generos[i];
-
-    canciones = new Cancion*[maxCanciones];
-    for (int i = 0; i < numCanciones; i++)
-        canciones[i] = otro.canciones[i];
 }
 
 Album::~Album() {
-    delete[] canciones;
-    canciones = nullptr;
+    delete[] cancionesIDs;
 }
 
+// --- Operador de asignación ---
 Album& Album::operator=(const Album& otro) {
     if (this != &otro) {
-        delete[] canciones;
+        delete[] cancionesIDs;
 
         idAlbum = otro.idAlbum;
         idArtista = otro.idArtista;
@@ -70,21 +72,21 @@ Album& Album::operator=(const Album& otro) {
         numCanciones = otro.numCanciones;
         maxCanciones = otro.maxCanciones;
 
+        cancionesIDs = new long[maxCanciones];
+        for (int i = 0; i < numCanciones; i++)
+            cancionesIDs[i] = otro.cancionesIDs[i];
         for (int i = 0; i < 4; i++)
             generos[i] = otro.generos[i];
-
-        canciones = new Cancion*[maxCanciones];
-        for (int i = 0; i < numCanciones; i++)
-            canciones[i] = otro.canciones[i];
     }
     return *this;
 }
 
-int Album::getIdAlbum() const { return idAlbum; }
-void Album::setIdAlbum(int id) { idAlbum = id; }
+// --- Getters / Setters ---
+long Album::getIdAlbum() const { return idAlbum; }
+void Album::setIdAlbum(long id) { idAlbum = id; }
 
-int Album::getIdArtista() const { return idArtista; }
-void Album::setIdArtista(int id) { idArtista = id; }
+long Album::getIdArtista() const { return idArtista; }
+void Album::setIdArtista(long id) { idArtista = id; }
 
 std::string Album::getNombre() const { return nombre; }
 void Album::setNombre(const std::string& n) { nombre = n; }
@@ -102,112 +104,96 @@ float Album::getPuntuacion() const { return puntuacion; }
 void Album::setPuntuacion(float p) { puntuacion = p; }
 
 std::string Album::getGenero(int i) const {
-    if (i >= 0 && i < 4) return generos[i];
-    return "";
+    if (i < 0 || i >= 4) return "N/A";
+    return generos[i];
 }
-
 void Album::setGenero(int i, const std::string& g) {
     if (i >= 0 && i < 4) generos[i] = g;
 }
 
 int Album::getNumCanciones() const { return numCanciones; }
-bool Album::agregarCancion(Cancion* c) {
-    if (numCanciones >= maxCanciones || c == nullptr)
-        return false;
+int Album::getMaxCanciones() const { return maxCanciones; }
 
-    // evitar duplicados
-    for (int i = 0; i < numCanciones; i++) {
-        if (canciones[i]->getIdCancion() == c->getIdCancion())
-            return false;
-    }
+long Album::getCancionID(int i) const {
+    if (i < 0 || i >= numCanciones) return -1;
+    return cancionesIDs[i];
+}
+void Album::setCancionID(int i, long id) {
+    if (i >= 0 && i < maxCanciones)
+        cancionesIDs[i] = id;
+}
 
-    canciones[numCanciones++] = c;
+// --- Funcionalidad ---
+bool Album::agregarCancion(long idCancion) {
+    if (numCanciones >= maxCanciones) return false;
+    cancionesIDs[numCanciones++] = idCancion;
     return true;
 }
-Cancion* Album::buscarCancion(int id) const {
+
+bool Album::eliminarCancion(long idCancion) {
     for (int i = 0; i < numCanciones; i++) {
-        if (canciones[i]->getIdCancion() == id)
-            return canciones[i];
+        if (cancionesIDs[i] == idCancion) {
+            for (int j = i; j < numCanciones - 1; j++)
+                cancionesIDs[j] = cancionesIDs[j + 1];
+            numCanciones--;
+            return true;
+        }
     }
-    return nullptr;
+    return false;
 }
 
-float Album::calcularDuracionTotal() const {
-    float total = 0.0f;
+void Album::mostrar(int esPremium) const {
+    cout << "\nÁlbum: " << nombre << " (" << numCanciones << " canciones)\n";
     for (int i = 0; i < numCanciones; i++) {
-        total += canciones[i]->getDuracion();
+        Cancion c;
+        c.setDatos(cancionesIDs[i], "Desconocida", "0", "ruta128.mp3", "ruta320.mp3");
+        cout << "- " << c.obtenerNombre()
+             << " | Duración: " << c.obtenerDuracion()
+             << " | Ruta: " << c.obtenerRutaAudio(esPremium) << "\n";
+    }
+}
+
+float Album::calcularDuracionTotal(int esPremium) const {
+    float total = 0;
+    for (int i = 0; i < numCanciones; i++) {
+        Cancion c;
+        c.setDatos(cancionesIDs[i], "Desconocida", "0", "ruta128.mp3", "ruta320.mp3");
+        try {
+            total += stof(c.obtenerDuracion());
+        } catch (...) {}
     }
     return total;
 }
 
-void Album::mostrarInfo() const {
-    std::cout << "Álbum: " << nombre << " (ID: " << idAlbum << ")\n";
-    std::cout << "Artista ID: " << idArtista << "\n";
-    std::cout << "Fecha: " << fechaLanzamiento << " | Sello: " << sello << "\n";
-    std::cout << "Puntuación: " << puntuacion << " | Duración total: "
-              << calcularDuracionTotal() << " seg\n";
-    std::cout << "Géneros: ";
-    for (int i = 0; i < 4; i++) {
-        if (generos[i] != "N/A") std::cout << generos[i] << " ";
-    }
-    std::cout << "\nCanciones (" << numCanciones << "):\n";
-    for (int i = 0; i < numCanciones; i++) {
-        std::cout << "  - ";
-        canciones[i]->mostrarInfo();
-    }
-    std::cout << "-----------------------------------\n";
-}
+// --- Persistencia ---
 void Album::guardarEnArchivo(const std::string& nombreArchivo) const {
-    std::ofstream archivo(nombreArchivo, std::ios::app);
+    ofstream archivo(nombreArchivo);
     if (!archivo.is_open()) return;
-    archivo << idAlbum << ';'
-            << idArtista << ';'
-            << nombre << ';'
-            << fechaLanzamiento << ';'
-            << sello << ';'
-            << portada << ';'
-            << puntuacion << ';';
-    for (int i = 0; i < 4; i++) {
-        archivo << generos[i];
-        if (i < 3) archivo << ',';
-    }
-    archivo << ';' << numCanciones << '\n';
+
+    archivo << idAlbum << ";" << nombre << ";" << idArtista << ";"
+            << fechaLanzamiento << ";" << sello << ";" << puntuacion << "\n";
+
+    for (int i = 0; i < numCanciones; i++)
+        archivo << cancionesIDs[i] << "\n";
+
     archivo.close();
 }
 
-Album* Album::cargarDesdeArchivo(const std::string& nombreArchivo, int& totalAlbums) {
-    std::ifstream archivo(nombreArchivo);
-    if (!archivo.is_open()) {
-        totalAlbums = 0;
-        return nullptr;
+Album Album::cargarDesdeArchivo(const std::string& nombreArchivo, int capacidad) {
+    Album al(0, 0, "Cargado", capacidad);
+    ifstream archivo(nombreArchivo);
+    if (!archivo.is_open()) return al;
+
+    string linea;
+    getline(archivo, linea); // primera línea con datos generales
+    while (getline(archivo, linea)) {
+        if (linea.empty()) continue;
+        try {
+            long id = stol(linea);
+            al.agregarCancion(id);
+        } catch (...) {}
     }
-    totalAlbums = 0;
-    std::string linea;
-    while (std::getline(archivo, linea))
-        totalAlbums++;
-    archivo.clear();
-    archivo.seekg(0);
-    Album* lista = new Album[totalAlbums];
-    int i = 0;
-    while (std::getline(archivo, linea)) {
-        std::stringstream ss(linea);
-        std::string parte, generosStr;
-        std::getline(ss, parte, ';'); lista[i].setIdAlbum(std::stoi(parte));
-        std::getline(ss, parte, ';'); lista[i].setIdArtista(std::stoi(parte));
-        std::getline(ss, parte, ';'); lista[i].setNombre(parte);
-        std::getline(ss, parte, ';'); lista[i].setFechaLanzamiento(parte);
-        std::getline(ss, parte, ';'); lista[i].setSello(parte);
-        std::getline(ss, parte, ';'); lista[i].setPortada(parte);
-        std::getline(ss, parte, ';'); lista[i].setPuntuacion(std::stof(parte));
-        std::getline(ss, generosStr, ';');
-        std::stringstream sg(generosStr);
-        for (int g = 0; g < 4; g++) {
-            if (std::getline(sg, parte, ',')) lista[i].setGenero(g, parte);
-            else lista[i].setGenero(g, "N/A");
-        }
-        std::getline(ss, parte, '\n');
-        i++;
-    }
+
     archivo.close();
-    return lista;
+    return al;
 }

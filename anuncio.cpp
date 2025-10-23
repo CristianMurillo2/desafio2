@@ -69,7 +69,7 @@ void Anuncio::mostrar() const {
 
 Anuncio* Anuncio::seleccionarAleatorio(Anuncio* lista, int total, int& ultimoMostrado) {
     if (total == 0) return nullptr;
-        int pesoTotal = 0;
+    int pesoTotal = 0;
     for (int i = 0; i < total; i++)
         pesoTotal += lista[i].getPrioridad();
 

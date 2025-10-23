@@ -1,23 +1,25 @@
-#include "Playlist.h"
+#include "playlist.h"
 #include <iostream>
-#include "Album.h"
 #include <fstream>
-#include <sstream>
+using namespace std;
 
+// --- Constructores ---
 Playlist::Playlist() {
-    nombre = "Sin nombre";
-    maxCanciones = 10000;
+    nombre = "Favoritos";
+    maxCanciones = 20;
     numCanciones = 0;
-    indiceActual = -1;
-    canciones = new Cancion*[maxCanciones];
+    indiceActual = 0;
+    cancionesIDs = new long[maxCanciones];
+    posHistorial = 0;
+    cancionesEnHistorial = 0;
 }
+
 Playlist::Playlist(const std::string& nombre, int capacidadMax) {
     this->nombre = nombre;
-    this->maxCanciones = capacidadMax;
-    this->numCanciones = 0;
-    this->indiceActual = -1;
-    this->canciones = new Cancion*[maxCanciones];
-    for (int i = 0; i < 4; i++) historial[i] = -1;
+    maxCanciones = capacidadMax > 0 ? capacidadMax : 20;
+    numCanciones = 0;
+    indiceActual = 0;
+    cancionesIDs = new long[maxCanciones];
     posHistorial = 0;
     cancionesEnHistorial = 0;
 }
@@ -27,150 +29,156 @@ Playlist::Playlist(const Playlist& otra) {
     maxCanciones = otra.maxCanciones;
     numCanciones = otra.numCanciones;
     indiceActual = otra.indiceActual;
-    canciones = new Cancion*[maxCanciones];
-    for (int i = 0; i < numCanciones; i++) {
-        canciones[i] = otra.canciones[i];
-    }
+
+    cancionesIDs = new long[maxCanciones];
+    for (int i = 0; i < numCanciones; i++)
+        cancionesIDs[i] = otra.cancionesIDs[i];
+
+    for (int i = 0; i < 4; i++)
+        historial[i] = otra.historial[i];
+
+    posHistorial = otra.posHistorial;
+    cancionesEnHistorial = otra.cancionesEnHistorial;
 }
 
 Playlist::~Playlist() {
-    delete[] canciones;
-    canciones = nullptr;
+    delete[] cancionesIDs;
 }
+
+// --- Sobrecarga de operador ---
 Playlist& Playlist::operator=(const Playlist& otra) {
     if (this != &otra) {
-        delete[] canciones;
+        delete[] cancionesIDs;
 
         nombre = otra.nombre;
         maxCanciones = otra.maxCanciones;
         numCanciones = otra.numCanciones;
         indiceActual = otra.indiceActual;
 
-        canciones = new Cancion*[maxCanciones];
-        for (int i = 0; i < numCanciones; i++) {
-            canciones[i] = otra.canciones[i];
-        }
+        cancionesIDs = new long[maxCanciones];
+        for (int i = 0; i < numCanciones; i++)
+            cancionesIDs[i] = otra.cancionesIDs[i];
+
+        for (int i = 0; i < 4; i++)
+            historial[i] = otra.historial[i];
+
+        posHistorial = otra.posHistorial;
+        cancionesEnHistorial = otra.cancionesEnHistorial;
     }
     return *this;
 }
 
-std::string Playlist::getNombre() const {
-    return nombre;
+// --- Getters / Setters ---
+std::string Playlist::getNombre() const { return nombre; }
+void Playlist::setNombre(const std::string& nuevoNombre) { nombre = nuevoNombre; }
+
+int Playlist::getNumCanciones() const { return numCanciones; }
+int Playlist::getMaxCanciones() const { return maxCanciones; }
+
+int Playlist::getIndiceActual() const { return indiceActual; }
+void Playlist::setIndiceActual(int indice) {
+    if (indice >= 0 && indice < numCanciones)
+        indiceActual = indice;
 }
 
-void Playlist::setNombre(const std::string& nuevoNombre) {
-    nombre = nuevoNombre;
+long Playlist::getCancionID(int indice) const {
+    if (indice < 0 || indice >= numCanciones) return -1;
+    return cancionesIDs[indice];
 }
 
-int Playlist::getNumCanciones() const {
-    return numCanciones;
+void Playlist::setCancionID(int indice, long id) {
+    if (indice >= 0 && indice < maxCanciones)
+        cancionesIDs[indice] = id;
 }
 
-int Playlist::getMaxCanciones() const {
-    return maxCanciones;
-}
-
-int Playlist::getIndiceActual() const {
-    return indiceActual;
-}
-
-bool Playlist::agregarCancion(Cancion* c) {
+// --- Funcionalidad principal ---
+bool Playlist::agregarCancion(long idCancion) {
     if (numCanciones >= maxCanciones) return false;
-    for (int i = 0; i < numCanciones; i++) {
-        if (canciones[i]->getIdCancion() == c->getIdCancion()) {
-            return false;
-        }
-    }
-
-    canciones[numCanciones++] = c;
-    if (indiceActual == -1) indiceActual = 0;
+    cancionesIDs[numCanciones++] = idCancion;
     return true;
 }
 
-bool Playlist::eliminarCancion(int idCancion) {
+bool Playlist::eliminarCancion(long idCancion) {
     for (int i = 0; i < numCanciones; i++) {
-        if (canciones[i]->getIdCancion() == idCancion) {
-            for (int j = i; j < numCanciones - 1; j++) {
-                canciones[j] = canciones[j + 1];
-            }
+        if (cancionesIDs[i] == idCancion) {
+            for (int j = i; j < numCanciones - 1; j++)
+                cancionesIDs[j] = cancionesIDs[j + 1];
             numCanciones--;
-            if (indiceActual >= numCanciones) indiceActual = numCanciones - 1;
             return true;
         }
     }
     return false;
 }
 
-void Playlist::mostrar() const {
-    std::cout << "Playlist: " << nombre << " (" << numCanciones << " canciones)\n";
+// --- Mostrar ---
+void Playlist::mostrar(int esPremium) const {
+    cout << "\nPlaylist: " << nombre << " (" << numCanciones << " canciones)\n";
     for (int i = 0; i < numCanciones; i++) {
-        std::cout << "  - ";
-        canciones[i]->mostrarInfo();
+        Cancion c;
+        // Simulación de carga desde BD o archivo (solo por ID)
+        c.setDatos(cancionesIDs[i], "Desconocida", "0", "ruta128.mp3", "ruta320.mp3");
+        cout << "- " << c.obtenerNombre()
+             << " | Duración: " << c.obtenerDuracion()
+             << " | Ruta: " << c.obtenerRutaAudio(esPremium) << "\n";
     }
 }
 
-Cancion* Playlist::siguiente() {
-    if (numCanciones == 0) return nullptr;
-    if (indiceActual != -1) {
-        historial[posHistorial] = indiceActual;
-        posHistorial = (posHistorial + 1) % 4;
-        if (cancionesEnHistorial < 4) cancionesEnHistorial++;
-    }
+// --- Reproducción ---
+Cancion Playlist::reproducirActual(int esPremium) {
+    Cancion c;
+    if (numCanciones == 0) return c;
 
+    historial[posHistorial] = indiceActual;
+    posHistorial = (posHistorial + 1) % 4;
+    if (cancionesEnHistorial < 4) cancionesEnHistorial++;
+
+    c.setDatos(cancionesIDs[indiceActual], "Reproduciendo", "0", "ruta128.mp3", "ruta320.mp3");
+    return c;
+}
+
+Cancion Playlist::siguiente(int esPremium) {
+    if (numCanciones == 0) return Cancion();
     indiceActual = (indiceActual + 1) % numCanciones;
-    return canciones[indiceActual];
+    return reproducirActual(esPremium);
 }
-Cancion* Playlist::anterior() {
-    if (cancionesEnHistorial == 0) {
-        std::cout << "No hay canciones previas disponibles.\n";
-        return nullptr;
-    }
 
+Cancion Playlist::anterior(int esPremium) {
+    if (numCanciones == 0 || cancionesEnHistorial == 0) return Cancion();
     posHistorial = (posHistorial - 1 + 4) % 4;
-    int indicePrevio = historial[posHistorial];
-
-    if (indicePrevio == -1) {
-        std::cout << " No hay más canciones anteriores (máximo 4 permitidas).\n";
-        return nullptr;
-    }
-
-    indiceActual = indicePrevio;
+    indiceActual = historial[posHistorial];
     cancionesEnHistorial--;
-    return canciones[indiceActual];
+    return reproducirActual(esPremium);
 }
+
+// --- Persistencia ---
 void Playlist::guardarEnArchivo(const std::string& nombreArchivo) const {
-    std::ofstream archivo(nombreArchivo);
+    ofstream archivo(nombreArchivo);
     if (!archivo.is_open()) return;
-    for (int i = 0; i < numCanciones; i++) {
-        Cancion* c = canciones[i];
-        archivo << c->getIdCancion() << ';'
-                << c->getNombre() << ';'
-                << c->getDuracion() << ';'
-                << c->getRuta128() << ';'
-                << c->getRuta320() << '\n';
-    }
+
+    archivo << nombre << '\n';
+    for (int i = 0; i < numCanciones; i++)
+        archivo << cancionesIDs[i] << '\n';
+
     archivo.close();
 }
 
-Playlist Playlist::cargarDesdeArchivo(const std::string& nombreArchivo) {
-    Playlist lista("Favoritos", 10000);
-    std::ifstream archivo(nombreArchivo);
-    if (!archivo.is_open()) return lista;
-    std::string linea, parte;
-    while (std::getline(archivo, linea)) {
-        std::stringstream ss(linea);
-        int id;
-        std::string nombre, ruta128, ruta320;
-        float duracion;
-        std::getline(ss, parte, ';'); id = std::stoi(parte);
-        std::getline(ss, nombre, ';');
-        std::getline(ss, parte, ';'); duracion = std::stof(parte);
-        std::getline(ss, ruta128, ';');
-        std::getline(ss, ruta320, '\n');
-        Cancion* c = new Cancion(id, nombre, duracion, ruta128, ruta320);
-        lista.agregarCancion(c);
-    }
-    archivo.close();
-    return lista;
+Playlist Playlist::cargarDesdeArchivo(const std::string& nombreArchivo, int capacidadMax) {
+    Playlist pl("Cargada", capacidadMax);
+    ifstream archivo(nombreArchivo);
+    if (!archivo.is_open()) return pl;
 
+    string linea;
+    getline(archivo, linea);
+    pl.setNombre(linea);
+
+    while (getline(archivo, linea)) {
+        if (linea.empty()) continue;
+        try {
+            long id = stol(linea);
+            pl.agregarCancion(id);
+        } catch (...) {}
+    }
+
+    archivo.close();
+    return pl;
 }
