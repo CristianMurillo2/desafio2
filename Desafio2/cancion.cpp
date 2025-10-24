@@ -30,7 +30,6 @@ string Cancion::obtenerRutaAudio(int esPremium) {
 
 
 Cancion& Cancion::operator=(const Cancion& otra) {
-    // 1. Evitar auto-asignación (ej: c1 = c1)
     if (this != &otra) {
         // 2. Copiar todos los atributos
         this->idCancion = otra.idCancion;

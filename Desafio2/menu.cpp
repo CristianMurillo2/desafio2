@@ -48,12 +48,12 @@ int menuIngresoPremium(){
     cout << "1. Reproducir canciones de forma aleatoria." << endl;
     cout << "2. Reproducir cancion especifica." << endl;
     cout << "3. Reproducir mi playlist favorita." << endl;
-    cout << "4. Seguir una playlist de otro usuario." << endl;
+    cout << "4. Editar playlist." << endl;
     cout << "5. Cancelar suscripcion." << endl;
     cout << "6. Salir de la cuenta." << endl;
     cout << "Seleccione una opcion: ";
     while (!(cin >> opcion) || opcion < 1 || opcion > 6) {
-        cout << "Entrada invalida. Ingrese un numero entre 1 y 3: ";
+        cout << "Entrada invalida. Ingrese un numero entre 1 y 6: ";
         cin.clear();
         cin.ignore(255, '\n');
     }
@@ -100,4 +100,34 @@ long menuBuscarCancion(){
         cin.ignore(255, '\n');
     }
     return idCancion;
+}
+
+int menuReproductorPlaylist(){
+    int opcion;
+    cout << "1. Reproducir aleatoriamente lista de favoritos." << endl;
+    cout << "2. Reproducir canciones en orden original." << endl;
+    cout << "3. Volver al menu anterior." << endl;
+    cout << "Seleccione una opcion: ";
+    while (!(cin >> opcion) || opcion < 1 || opcion > 3) {
+        cout << "Entrada invalida. Ingrese un numero entre 1 y 3: ";
+        cin.clear();
+        cin.ignore(255, '\n');
+    }
+    return opcion;
+}
+
+int menuEditarPlaylist(){
+    int opcion;
+    cout << "1. Agregar cancion a playlist." << endl;
+    cout << "2. Eliminar cancion de playlist." << endl;
+    cout << "3. Seguir una playlist de otro usuario." << endl;
+    cout << "4. Dejar de seguir una playlist de otro usuario." << endl;
+    cout << "5. Volver al menu anterior." << endl;
+    cout << "Selecciona una opcion: ";
+    while (!(cin >> opcion) || opcion < 1 || opcion > 5) {
+        cout << "Entrada invalida. Ingrese un numero entre 1 y 5: ";
+        cin.clear();
+        cin.ignore(255, '\n');
+    }
+    return opcion;
 }

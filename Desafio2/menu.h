@@ -11,5 +11,7 @@ int menuIngresoPremium();
 int menuFuncionesPremium();
 int menuFuncionesNoPremium();
 long menuBuscarCancion();
+int menuReproductorPlaylist();
+int menuEditarPlaylist();
 
 #endif // MENU_H
