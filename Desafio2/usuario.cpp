@@ -62,7 +62,7 @@ void Usuario::ponerUsuarioSeguido(const string &newUsuarioSeguido) {
     if (premium == 1) {
         usuarioSeguido = newUsuarioSeguido;
     } else {
-        cout << "Error: Los usuarios estandar no pueden seguir a otros." << endl;
+        cout << endl << "Error: Los usuarios estandar no pueden seguir a otros." << endl;
         usuarioSeguido = "";
     }
 }
@@ -83,7 +83,7 @@ void LecturaUsuario::cargarDesdeArchivo(const string& nombreArchivo)
 
     ifstream archivo(nombreArchivo);
     if (!archivo.is_open()) {
-        cout << "Error al abrir el archivo: " << nombreArchivo << endl;
+        cout << endl << "Error al abrir el archivo: " << nombreArchivo << endl;
         return;
     }
 
@@ -134,7 +134,7 @@ void LecturaUsuario::cargarDesdeArchivo(const string& nombreArchivo)
             i++;
 
         } catch (const std::invalid_argument& e) {
-            cout << "Error al convertir premium en linea: " << linea << endl;
+            cout << endl << "Error al convertir premium en linea: " << linea << endl;
         }
     }
 
@@ -150,7 +150,7 @@ int LecturaUsuario::verificarUsuario(const string* datos){
             return usuarios[i].obtenerPremium();
         }
     }
-    cout << "Usuario o contrasena incorrectos." << endl;
+    cout << endl << "Usuario o contrasena incorrectos." << endl;
     return -1;
 }
 
@@ -165,13 +165,13 @@ Usuario* LecturaUsuario::obtenerUsuario(string nombre) {
 
 void LecturaUsuario::guardarEnArchivo() {
     if (nombreArchivo.empty()) {
-        cout << "Error: No se ha cargado ningún archivo." << endl;
+        cout << endl << "Error: No se ha cargado ningún archivo." << endl;
         return;
     }
 
     ofstream archivo(this->nombreArchivo);
     if (!archivo.is_open()) {
-        cout << "Error: No se pudo abrir el archivo para guardar: " << this->nombreArchivo << endl;
+        cout << endl << "Error: No se pudo abrir el archivo para guardar: " << this->nombreArchivo << endl;
         return;
     }
 
@@ -196,48 +196,48 @@ void LecturaUsuario::guardarEnArchivo() {
 void LecturaUsuario::seguirUsuario(string nombreUsuario, string usuarioASeguir) {
     Usuario* usuario = obtenerUsuario(nombreUsuario);
     if (usuario == nullptr) {
-        cout << "Error: No se encontro al usuario " << nombreUsuario << endl;
+        cout << endl << "Error: No se encontro al usuario " << nombreUsuario << endl;
         return;
     }
 
     if (usuario->obtenerPremium() == 0) {
-        cout << "Lo sentimos, solo los usuarios premium pueden seguir a otros." << endl;
+        cout << endl << "Lo sentimos, solo los usuarios premium pueden seguir a otros." << endl;
         return;
     }
 
     Usuario* usuarioSeguido = obtenerUsuario(usuarioASeguir);
     if (usuarioSeguido == nullptr) {
-        cout << "Error: El usuario '" << usuarioASeguir << "' no existe." << endl;
+        cout << endl << "Error: El usuario '" << usuarioASeguir << "' no existe." << endl;
         return;
     }
     if (nombreUsuario == usuarioASeguir) {
-        cout << "Error: No puedes seguirte a ti mismo." << endl;
+        cout << endl << "Error: No puedes seguirte a ti mismo." << endl;
         return;
     }
     if (usuarioSeguido->obtenerPremium() == 0) {
-        cout << "Error: Solo puedes seguir playlists de usuarios premium." << endl;
+        cout << endl << "Error: Solo puedes seguir playlists de usuarios premium." << endl;
         return;
     }
 
     usuario->ponerUsuarioSeguido(usuarioASeguir);
     guardarEnArchivo();
-    cout << "Ahora estas siguiendo a: " << usuarioASeguir << endl;
+    cout << endl << "Ahora estas siguiendo a: " << usuarioASeguir << endl;
 }
 
 void LecturaUsuario::dejarDeSeguir(string nombreUsuario) {
     Usuario* usuario = obtenerUsuario(nombreUsuario);
     if (usuario == nullptr) {
-        cout << "Error: No se encontro al usuario " << nombreUsuario << endl;
+        cout << endl << "Error: No se encontro al usuario " << nombreUsuario << endl;
         return;
     }
 
-    string seguido = usuario->obtenerUsuarioSeguido();
+string seguido = usuario->obtenerUsuarioSeguido();
 
     if (!seguido.empty()) {
-        cout << "Has dejado de seguir a: " << seguido << endl;
+        cout << endl << "Has dejado de seguir a: " << seguido << endl;
         usuario->ponerUsuarioSeguido("");
         guardarEnArchivo();
     } else {
-        cout << "Actualmente no estas siguiendo a nadie." << endl;
+        cout << endl << "Actualmente no estas siguiendo a nadie." << endl;
     }
 }

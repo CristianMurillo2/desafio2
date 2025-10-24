@@ -19,7 +19,7 @@ Album::Album() {
         generos[i] = "N/A";
 }
 
-Album::Album(long idAlbum, long idArtista, const std::string& nombre, int capacidad) {
+Album::Album(long idAlbum, long idArtista, const string& nombre, int capacidad) {
     this->idAlbum = idAlbum;
     this->idArtista = idArtista;
     this->nombre = nombre;
@@ -85,26 +85,26 @@ void Album::setIdAlbum(long id) { idAlbum = id; }
 long Album::getIdArtista() const { return idArtista; }
 void Album::setIdArtista(long id) { idArtista = id; }
 
-std::string Album::getNombre() const { return nombre; }
-void Album::setNombre(const std::string& n) { nombre = n; }
+string Album::getNombre() const { return nombre; }
+void Album::setNombre(const string& n) { nombre = n; }
 
-std::string Album::getFechaLanzamiento() const { return fechaLanzamiento; }
-void Album::setFechaLanzamiento(const std::string& f) { fechaLanzamiento = f; }
+string Album::getFechaLanzamiento() const { return fechaLanzamiento; }
+void Album::setFechaLanzamiento(const string& f) { fechaLanzamiento = f; }
 
-std::string Album::getSello() const { return sello; }
-void Album::setSello(const std::string& s) { sello = s; }
+string Album::getSello() const { return sello; }
+void Album::setSello(const string& s) { sello = s; }
 
-std::string Album::getPortada() const { return portada; }
-void Album::setPortada(const std::string& p) { portada = p; }
+string Album::getPortada() const { return portada; }
+void Album::setPortada(const string& p) { portada = p; }
 
 float Album::getPuntuacion() const { return puntuacion; }
 void Album::setPuntuacion(float p) { puntuacion = p; }
 
-std::string Album::getGenero(int i) const {
+string Album::getGenero(int i) const {
     if (i < 0 || i >= 4) return "N/A";
     return generos[i];
 }
-void Album::setGenero(int i, const std::string& g) {
+void Album::setGenero(int i, const string& g) {
     if (i >= 0 && i < 4) generos[i] = g;
 }
 
@@ -161,7 +161,7 @@ float Album::calcularDuracionTotal(int esPremium) const {
     return total;
 }
 
-void Album::guardarEnArchivo(const std::string& nombreArchivo) const {
+void Album::guardarEnArchivo(const string& nombreArchivo) const {
     ofstream archivo(nombreArchivo);
     if (!archivo.is_open()) return;
 
@@ -174,21 +174,68 @@ void Album::guardarEnArchivo(const std::string& nombreArchivo) const {
     archivo.close();
 }
 
-Album Album::cargarDesdeArchivo(const std::string& nombreArchivo, int capacidad) {
-    Album al(0, 0, "Cargado", capacidad);
+Album* Album::cargarAlbumes(string nombreArchivo, int& totalAlbumes) {
     ifstream archivo(nombreArchivo);
-    if (!archivo.is_open()) return al;
-
+    if (!archivo.is_open()) {
+        cout << "Error: No se pudo abrir el archivo " << nombreArchivo << endl;
+        totalAlbumes = 0;
+        return nullptr;
+    }
     string linea;
-    getline(archivo, linea); // primera línea con datos generales
+    totalAlbumes = 0;
     while (getline(archivo, linea)) {
+        if (!linea.empty()) { // Ignora líneas vacías
+            totalAlbumes++;
+        }
+    }
+    if (totalAlbumes == 0) {
+        archivo.close();
+        return nullptr;
+    }
+    Album* listaAlbumes = new Album[totalAlbumes];
+    archivo.clear();
+    archivo.seekg(0);
+    int i = 0;
+    while (getline(archivo, linea) && i < totalAlbumes) {
         if (linea.empty()) continue;
         try {
-            long id = stol(linea);
-            al.agregarCancion(id);
-        } catch (...) {}
+            size_t pos1 = linea.find(';');
+            if (pos1 == string::npos) continue;
+            string idArtistaStr = linea.substr(0, pos1);
+            size_t pos2 = linea.find(';', pos1 + 1);
+            if (pos2 == string::npos) continue;
+            string idAlbumStr = linea.substr(pos1 + 1, pos2 - (pos1 + 1));
+            size_t pos3 = linea.find(';', pos2 + 1);
+            if (pos3 == string::npos) continue;
+            string nombre = linea.substr(pos2 + 1, pos3 - (pos2 + 1));
+            string rutaPortada = linea.substr(pos3 + 1);
+            listaAlbumes[i].setIdArtista(stoll(idArtistaStr));
+            listaAlbumes[i].setIdAlbum(stoll(idAlbumStr));
+            listaAlbumes[i].setNombre(nombre);
+            listaAlbumes[i].setPortada(rutaPortada);
+            i++;
+        } catch (const invalid_argument& e) {
+            cout << "Error de formato numerico en linea de album: " << linea << " (" << e.what() << ")" << endl;
+        } catch (const out_of_range& e) {
+            cout << "Error de rango numerico en linea de album: " << linea << " (" << e.what() << ")" << endl;
+        } catch (...) {
+            cout << "Error desconocido al parsear linea de album: " << linea << endl;
+        }
     }
-
     archivo.close();
-    return al;
+    totalAlbumes = i;
+    return listaAlbumes;
 }
+
+Album* Album::buscarAlbumPorIDs(Album* listaAlbumes, int totalAlbumes, long idArtista, long idAlbumNum) {
+    if (listaAlbumes == nullptr) return nullptr;
+
+    for (int i = 0; i < totalAlbumes; i++) {
+        if (listaAlbumes[i].getIdArtista() == idArtista && listaAlbumes[i].getIdAlbum() == idAlbumNum) {
+            return &listaAlbumes[i];
+        }
+    }
+    return nullptr;
+}
+
+

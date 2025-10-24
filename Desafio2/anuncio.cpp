@@ -115,21 +115,37 @@ Anuncio* Anuncio::cargarDesdeArchivo(const std::string& nombreArchivo, int& tota
     }
     totalAnuncios = 0;
     std::string linea;
-    while (std::getline(archivo, linea))
-        totalAnuncios++;
+    while (std::getline(archivo, linea)) {
+        if (!linea.empty()) {
+            totalAnuncios++;
+        }
+    }
+
+    if (totalAnuncios == 0) return nullptr; // Si el archivo estaba vacío
+
     archivo.clear();
     archivo.seekg(0);
     Anuncio* lista = new Anuncio[totalAnuncios];
     int i = 0;
     while (std::getline(archivo, linea)) {
+
+        if (linea.empty()) continue;
+
         std::stringstream ss(linea);
         std::string parte;
-        std::getline(ss, parte, ';'); lista[i].setId(std::stoi(parte));
-        std::getline(ss, parte, ';'); lista[i].setCategoria(parte[0]);
-        std::getline(ss, parte, ';'); lista[i].setPrioridad(std::stoi(parte));
-        std::getline(ss, parte, '\n'); lista[i].setTexto(parte);
-        i++;
+        std::getline(ss, parte, ';');
+        try {
+            lista[i].id = std::stoi(parte);
+            std::getline(ss, parte, ';');
+            lista[i].setCategoria(parte[0]);
+            std::getline(ss, parte);
+            lista[i].setTexto(parte);
+            i++;
+        } catch (...) {
+            std::cout << "Error al leer linea de anuncio: " << linea << std::endl;
+            totalAnuncios--;
+        }
     }
-    archivo.close();
     return lista;
 }
+

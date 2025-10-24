@@ -45,6 +45,7 @@ public:
     Cancion reproducirActual(int esPremium, LecturaCanciones& gestor);
     Cancion siguiente(int esPremium, LecturaCanciones& gestor);
     Cancion anterior(int esPremium, LecturaCanciones& gestor);
+    Cancion reproducirAleatoria(int esPremium, LecturaCanciones& gestor);
 
     void guardarEnArchivo(const std::string& nombreArchivo) const;
     static Playlist cargarDesdeArchivo(const std::string& nombreArchivo, int capacidadMax);

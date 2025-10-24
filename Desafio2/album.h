@@ -8,10 +8,10 @@ class Album {
 private:
     long idAlbum;
     long idArtista;
-    std::string nombre;
-    std::string fechaLanzamiento;
-    std::string sello;
-    std::string portada;
+    string nombre;
+    string fechaLanzamiento;
+    string sello;
+    string portada;
     float puntuacion;
     std::string generos[4];
 
@@ -20,7 +20,7 @@ private:
     int maxCanciones;
 
 public:    Album();
-    Album(long idAlbum, long idArtista, const std::string& nombre, int capacidad);
+    Album(long idAlbum, long idArtista, const string& nombre, int capacidad);
     Album(const Album& otro);
     ~Album();
 
@@ -31,23 +31,23 @@ public:    Album();
     long getIdArtista() const;
     void setIdArtista(long id);
 
-    std::string getNombre() const;
-    void setNombre(const std::string& n);
+    string getNombre() const;
+    void setNombre(const string& n);
 
-    std::string getFechaLanzamiento() const;
-    void setFechaLanzamiento(const std::string& f);
+    string getFechaLanzamiento() const;
+    void setFechaLanzamiento(const string& f);
 
-    std::string getSello() const;
-    void setSello(const std::string& s);
+    string getSello() const;
+    void setSello(const string& s);
 
-    std::string getPortada() const;
-    void setPortada(const std::string& p);
+    string getPortada() const;
+    void setPortada(const string& p);
 
     float getPuntuacion() const;
     void setPuntuacion(float p);
 
-    std::string getGenero(int i) const;
-    void setGenero(int i, const std::string& g);
+    string getGenero(int i) const;
+    void setGenero(int i, const string& g);
 
     int getNumCanciones() const;
     int getMaxCanciones() const;
@@ -60,8 +60,10 @@ public:    Album();
     void mostrar(int esPremium) const;
     float calcularDuracionTotal(int esPremium) const;
 
-    void guardarEnArchivo(const std::string& nombreArchivo) const;
-    static Album cargarDesdeArchivo(const std::string& nombreArchivo, int capacidad);
+    void guardarEnArchivo(const string& nombreArchivo) const;
+
+    static Album* cargarAlbumes(string nombreArchivo, int& totalAlbumes);
+    static Album* buscarAlbumPorIDs(Album* listaAlbumes, int totalAlbumes, long idArtista, long idAlbumNum);
 };
 
 #endif

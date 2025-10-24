@@ -1,6 +1,7 @@
 #include "playlist.h"
 #include <iostream>
 #include <fstream>
+#include <cstdlib>
 #include "lecturacanciones.h"
 
 using namespace std;
@@ -171,6 +172,30 @@ Cancion Playlist::anterior(int esPremium, LecturaCanciones& gestor) {
 
     return _reproducirIndiceActual(esPremium, gestor);
 }
+
+Cancion Playlist::reproducirAleatoria(int esPremium, LecturaCanciones& gestor) {
+    if (numCanciones == 0) return Cancion();
+
+    historial[posHistorial] = indiceActual;
+    posHistorial = (posHistorial + 1) % 6;
+    if (cancionesEnHistorial < 6) {
+        cancionesEnHistorial++;
+    }
+
+    int nuevoIndice;
+    if (numCanciones > 1) {
+        do {
+            nuevoIndice = rand() % numCanciones;
+        } while (nuevoIndice == indiceActual);
+    } else {
+        nuevoIndice = 0;
+    }
+
+    indiceActual = nuevoIndice;
+
+    return _reproducirIndiceActual(esPremium, gestor);
+}
+
 
 void Playlist::guardarEnArchivo(const std::string& nombreArchivo) const {
     ofstream archivo(nombreArchivo);

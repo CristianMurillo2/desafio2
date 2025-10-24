@@ -45,15 +45,14 @@ string* menuIngresoUsuario(){
 
 int menuIngresoPremium(){
     int opcion;
-    cout << "1. Reproducir canciones de forma aleatoria." << endl;
+    cout << "1. Reproducir canciones." << endl;
     cout << "2. Reproducir cancion especifica." << endl;
-    cout << "3. Reproducir mi playlist favorita." << endl;
-    cout << "4. Editar playlist." << endl;
-    cout << "5. Cancelar suscripcion." << endl;
-    cout << "6. Salir de la cuenta." << endl;
+    cout << "3. Editar playlist." << endl;
+    cout << "4. Cancelar suscripcion." << endl;
+    cout << "5. Salir de la cuenta." << endl;
     cout << "Seleccione una opcion: ";
-    while (!(cin >> opcion) || opcion < 1 || opcion > 6) {
-        cout << "Entrada invalida. Ingrese un numero entre 1 y 6: ";
+    while (!(cin >> opcion) || opcion < 1 || opcion > 5) {
+        cout << "Entrada invalida. Ingrese un numero entre 1 y 5: ";
         cin.clear();
         cin.ignore(255, '\n');
     }
@@ -62,15 +61,14 @@ int menuIngresoPremium(){
 
 int menuFuncionesPremium(){
     int opcion;
-    cout << "1. Cancion anterior." << endl;
-    cout << "2. Repetir de manera indefinida." << endl;
-    cout << "3. Pausar." << endl;
-    cout << "4, Cancion siguiente." << endl;
-    cout << "5. Agregar cancion a favorito." << endl;
-    cout << "6. Volver a menu anterior." << endl;
+    cout << endl << "--- Modo de Reproduccion ---" << endl;
+    cout << "1. Reproducir mi playlist (En orden)." << endl;
+    cout << "2. Reproduccion aleatoria (Tanda de 5 canciones)." << endl;
+    cout << "3. Reproducir mi playlist (Aleatorio)." << endl;
+    cout << "4. Volver" << endl;
     cout << "Ingresa una opcion: ";
-    while (!(cin >> opcion) || opcion < 1 || opcion > 6) {
-        cout << "Entrada invalida. Ingrese un numero entre 1 y 6: ";
+    while (!(cin >> opcion) || opcion < 1 || opcion > 4) {
+        cout << "Entrada invalida. Ingrese un numero entre 1 y 4: ";
         cin.clear();
         cin.ignore(255, '\n');
     }
@@ -130,4 +128,19 @@ int menuEditarPlaylist(){
         cin.ignore(255, '\n');
     }
     return opcion;
+}
+
+int menuControlesRepro(){
+    int opcion;
+    cout << endl <<"1. Siguiente cancion (Aleatoria)" << endl;
+    cout << "2. Cancion anterior" << endl;
+    cout << "3. Salir de la playlist" << endl;
+    cout << "Selecciona una pcion: ";
+    while (!(cin >> opcion) || opcion < 1 || opcion > 3) {
+        cout << "Entrada invalida. Ingrese un numero entre 1 y 3: ";
+        cin.clear();
+        cin.ignore(255, '\n');
+    }
+    return opcion;
+
 }
