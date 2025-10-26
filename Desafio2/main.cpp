@@ -12,7 +12,6 @@
 #include "lecturacanciones.h"
 #include "album.h"
 
-
 int main()
 {
     srand(time(0));
