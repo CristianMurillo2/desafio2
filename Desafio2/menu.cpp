@@ -116,7 +116,7 @@ int menuReproductorPlaylist(){
 
 int menuEditarPlaylist(){
     int opcion;
-    cout << "1. Agregar cancion a playlist." << endl;
+    cout << endl << "1. Agregar cancion a playlist." << endl;
     cout << "2. Eliminar cancion de playlist." << endl;
     cout << "3. Seguir una playlist de otro usuario." << endl;
     cout << "4. Dejar de seguir una playlist de otro usuario." << endl;

@@ -10,6 +10,7 @@
 #include "usuario.h"
 #include "menu.h"
 #include "lecturacanciones.h"
+#include "album.h"
 
 
 int main()
@@ -33,6 +34,13 @@ int main()
         cout << "Advertencia: No se pudo cargar 'anuncios.txt'. No se mostraran anuncios." << endl;
     }
 
+    Album* gestorAlbumes = nullptr;
+    int totalAlbumes = 0;
+    gestorAlbumes = Album::cargarAlbumes("albumes.txt", totalAlbumes);
+    if (totalAlbumes == 0) {
+        cout << "Advertencia: No se pudo cargar 'albumes.txt'. No se mostrará info de álbum." << endl;
+    }
+
     bool ingreso1 = true;
     bool ingreso2 = true;
     int esPremium;
@@ -53,8 +61,8 @@ int main()
                     usuarioActual = perfilUsuario[0];
                     usuValido = false;
                 }
-                delete[] perfilUsuario;
                 perfilUsuario = nullptr;
+                delete[] perfilUsuario;
             }
 
             if(esPremium == 1){
@@ -66,6 +74,7 @@ int main()
                     if(opcionUsuPremium == 1){ // Reproduccion aleatoria
                         int opcionReproduccion = menuFuncionesPremium();
                         if (opcionReproduccion == 1) {
+
 
                             string archivoPlaylist = usuarioActual + ".txt";
                             Playlist miPlaylist = Playlist::cargarDesdeArchivo(archivoPlaylist, 100);
@@ -96,14 +105,23 @@ int main()
                                 int opcionPlaylist = 0;
                                 Cancion cancionActual = playlistCombinada.reproducirActual(esPremium, gestorCanciones);
 
+
                                 do {
                                     if (cancionActual.obtenerID() != 0) {
                                         cout << endl << "--- Reproduciendo (Playlist) ---" << endl;
+                                        long idCancionCompleto = cancionActual.obtenerID();
+                                        long idArtistaBuscado = idCancionCompleto / 10000;
+                                        long idAlbumBuscado = (idCancionCompleto / 100) % 100;
+                                        Album* albumEncontrado = Album::buscarAlbumPorIDs(gestorAlbumes, totalAlbumes, idArtistaBuscado, idAlbumBuscado);
+                                        if (albumEncontrado != nullptr) {
+                                            cout << endl << "Album: " << albumEncontrado->getNombre() << endl;
+                                            cout << "Portada: " << albumEncontrado->getPortada() << endl;
+                                        } else {
+                                            cout << "Album: (Información no disponible)" << endl;
+                                        }
                                         cout << "Titulo: " << cancionActual.obtenerNombre() << endl;
                                         cout << "Duracion: " << cancionActual.obtenerDuracion() << endl;
                                         cout << "Ruta: " << cancionActual.obtenerRutaAudio(esPremium) << endl;
-
-                                        long idArtistaBuscado = cancionActual.obtenerID() / 10000;
                                         Artista* artista = gestorArtistas.buscarArtistaPorID(idArtistaBuscado);
                                         if (artista != nullptr) {
                                             cout << "Artista: " << artista->obtenerNombre() << endl;
@@ -153,19 +171,27 @@ int main()
 
                                     ultimoIdAleatorio = cancionAleatoria->obtenerID();
 
-                                    cout << "\n--- Cancion " << (i + 1) << "/5 ---" << endl;
+                                    cout << endl << "--- Cancion " << (i + 1) << "/5 ---" << endl;
+                                    long idCancionCompleto = cancionAleatoria->obtenerID();
+                                    long idArtistaBuscado = idCancionCompleto / 10000;
+                                    long idAlbumBuscado = (idCancionCompleto / 100) % 100;
+                                    Album* albumEncontrado = Album::buscarAlbumPorIDs(gestorAlbumes, totalAlbumes, idArtistaBuscado, idAlbumBuscado);
+                                    if (albumEncontrado != nullptr) {
+                                        cout << endl << "Album: " << albumEncontrado->getNombre() << endl;
+                                        cout << "Portada: " << albumEncontrado->getPortada() << endl;
+                                    } else {
+                                        cout << "Album: (Información no disponible)" << endl;
+                                    }
                                     cout << "Titulo: " << cancionAleatoria->obtenerNombre() << endl;
-
-                                    long idArtistaBuscado = cancionAleatoria->obtenerID() / 10000;
                                     Artista* artista = gestorArtistas.buscarArtistaPorID(idArtistaBuscado);
                                     if (artista != nullptr) {
                                         cout << "Artista: " << artista->obtenerNombre() << endl;
                                     }
-
+                                    cout << "Duracion: " << cancionAleatoria->obtenerDuracion() << endl;
                                     cout << "Ruta: " << cancionAleatoria->obtenerRutaAudio(esPremium) << endl;
                                     cout << "Reproduciendo por 3 segundos..." << endl;
 
-                                    std::this_thread::sleep_for(std::chrono::seconds(3));
+                                   this_thread::sleep_for(chrono::seconds(3));
 
                                 }
                                 cout << "\nFin de la tanda aleatoria." << endl;
@@ -210,11 +236,19 @@ int main()
                                 do {
                                     if (cancionActual.obtenerID() != 0) {
                                         cout << "\n--- Reproduciendo (Playlist Aleatoria) ---" << endl;
+                                        long idCancionCompleto = cancionActual.obtenerID();
+                                        long idArtistaBuscado = idCancionCompleto / 10000;
+                                        long idAlbumBuscado = (idCancionCompleto / 100) % 100;
+                                        Album* albumEncontrado = Album::buscarAlbumPorIDs(gestorAlbumes, totalAlbumes, idArtistaBuscado, idAlbumBuscado);
+                                        if (albumEncontrado != nullptr) {
+                                            cout << endl << "Album: " << albumEncontrado->getNombre() << endl;
+                                            cout << "Portada: " << albumEncontrado->getPortada() << endl;
+                                        } else {
+                                            cout << "Album: (Información no disponible)" << endl;
+                                        }
                                         cout << "Titulo: " << cancionActual.obtenerNombre() << endl;
                                         cout << "Duracion: " << cancionActual.obtenerDuracion() << endl;
                                         cout << "Ruta: " << cancionActual.obtenerRutaAudio(esPremium) << endl;
-
-                                        long idArtistaBuscado = cancionActual.obtenerID() / 10000;
                                         Artista* artista = gestorArtistas.buscarArtistaPorID(idArtistaBuscado);
                                         if (artista != nullptr) {
                                             cout << "Artista: " << artista->obtenerNombre() << endl;
@@ -255,11 +289,20 @@ int main()
 
                             if (cancionBuscada != nullptr) {
                                     cout << "--- Reproduciendo ---" << endl;
+                                    long idCancionCompleto = cancionBuscada->obtenerID();
+                                    long idArtistaBuscado = idCancionCompleto / 10000;
+                                    long idAlbumBuscado = (idCancionCompleto / 100) % 100;
+                                    Album* albumEncontrado = Album::buscarAlbumPorIDs(gestorAlbumes, totalAlbumes, idArtistaBuscado, idAlbumBuscado);
+                                    if (albumEncontrado != nullptr) {
+                                        cout << endl << "Album: " << albumEncontrado->getNombre() << endl;
+                                        cout << "Portada: " << albumEncontrado->getPortada() << endl;
+                                    } else {
+                                        cout << "Album: (Información no disponible)" << endl;
+                                    }
                                     cout << "ID: " << cancionBuscada->obtenerID() << endl;
                                     cout << "Nombre: " << cancionBuscada->obtenerNombre() << endl;
                                     cout << "Duracion: " << cancionBuscada->obtenerDuracion() << endl;
                                     cout << "Ruta Audio: " << cancionBuscada->obtenerRutaAudio(esPremium) << endl;
-                                    long idArtistaBuscado = cancionBuscada->obtenerID() / 10000;
                                     Artista* artista = gestorArtistas.buscarArtistaPorID(idArtistaBuscado);
                                     if (artista != nullptr) {
                                         cout << endl << "Artista: " << artista->obtenerNombre() << endl << endl;
@@ -351,9 +394,18 @@ int main()
                                 ultimoIdAleatorio = cancionAleatoria->obtenerID();
 
                                 cout << "\n--- Cancion " << (i + 1) << "/5 ---" << endl;
+                                long idCancionCompleto = cancionAleatoria->obtenerID();
+                                long idArtistaBuscado = idCancionCompleto / 10000;
+                                long idAlbumBuscado = (idCancionCompleto / 100) % 100;
+                                Album* albumEncontrado = Album::buscarAlbumPorIDs(gestorAlbumes, totalAlbumes, idArtistaBuscado, idAlbumBuscado);
+                                if (albumEncontrado != nullptr) {
+                                    cout << endl << "Album: " << albumEncontrado->getNombre() << endl;
+                                    cout << "Portada: " << albumEncontrado->getPortada() << endl;
+                                } else {
+                                    cout << "Album: (Información no disponible)" << endl;
+                                }
                                 cout << "Titulo: " << cancionAleatoria->obtenerNombre() << endl;
                                 cout << "Duracion: " << cancionAleatoria->obtenerDuracion() << endl;
-                                long idArtistaBuscado = cancionAleatoria->obtenerID() / 10000;
                                 cout << "Ruta audio: " << cancionAleatoria->obtenerRutaAudio(esPremium) << endl;
                                 Artista* artista = gestorArtistas.buscarArtistaPorID(idArtistaBuscado);
                                 if (artista != nullptr) {
@@ -362,7 +414,7 @@ int main()
 
 
                                 cout << "Reproduciendo por 3 segundos..." << endl;
-                                std::this_thread::sleep_for(std::chrono::seconds(3));
+                                this_thread::sleep_for(chrono::seconds(3));
 
 
                                 if ((i + 1) % 2 == 0 && totalAnuncios > 0) {
@@ -371,7 +423,7 @@ int main()
                                     if (ad != nullptr) {
                                         cout << "[" << ad->getCategoria() << "] " << ad->getTexto() << endl;
                                         cout << "(Pausa publicitaria de 3 segundos...)" << endl;
-                                        std::this_thread::sleep_for(std::chrono::seconds(3));
+                                        this_thread::sleep_for(chrono::seconds(3));
                                     }
                                     cout << "-----------------" << endl << endl;
                                 }
