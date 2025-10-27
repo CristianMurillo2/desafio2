@@ -51,4 +51,4 @@ public:
     static Playlist cargarDesdeArchivo(const std::string& nombreArchivo, int capacidadMax);
 };
 
-#endif // PLAYLIST_H
+#endif

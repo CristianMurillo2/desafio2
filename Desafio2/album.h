@@ -13,7 +13,7 @@ private:
     string sello;
     string portada;
     float puntuacion;
-    std::string generos[4];
+    string generos[4];
 
     long* cancionesIDs;
     int numCanciones;

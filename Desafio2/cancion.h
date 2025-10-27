@@ -27,4 +27,4 @@ public:
     Cancion& operator=(const Cancion& otra);
 };
 
-#endif // CANCION_H
+#endif
