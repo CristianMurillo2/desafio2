@@ -14,5 +14,6 @@ long menuBuscarCancion();
 int menuReproductorPlaylist();
 int menuEditarPlaylist();
 int menuControlesRepro();
+void mostrarMetricasActuales(const string& etapa);
 
 #endif
