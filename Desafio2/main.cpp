@@ -13,17 +13,6 @@
 #include "album.h"
 #include "eficiencia.h"
 
-void mostrarMetricasActuales(const string& etapa) {
-    long long iteraciones = MedidorEficiencia::getIteraciones();
-    long long memoria = MedidorEficiencia::getMemoriaAprox();
-
-    cout << endl << ">>> METRICAS ACUMULADAS TRAS [" << etapa << "] <<<" << endl;
-    cout << "    Iteraciones Totales: " << iteraciones << endl;
-    cout << "    Memoria Total (Aprox): " << memoria << " bytes (" << (memoria / 1024.0 / 1024.0) << " MB)" << endl;
-    cout << ">>> -------------------------------------------------- <<<\n" << endl;
-}
-
-
 int main()
 {
     MedidorEficiencia::iniciarMedicion();
