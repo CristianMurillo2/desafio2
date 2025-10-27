@@ -20,4 +20,4 @@ public:
     Artista* buscarArtistaPorID(long idBuscado);
 };
 
-#endif // LECTURAARTISTAS_H
+#endif

@@ -22,4 +22,4 @@ public:
     Cancion* obtenerCancionAleatoria();
 };
 
-#endif // LECTURACANCIONES_H
+#endif

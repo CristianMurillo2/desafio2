@@ -31,4 +31,4 @@ public:
     Artista& operator=(const Artista& otro);
 };
 
-#endif // ARTISTA_H
+#endif

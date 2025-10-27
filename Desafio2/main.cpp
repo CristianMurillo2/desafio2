@@ -11,9 +11,23 @@
 #include "menu.h"
 #include "lecturacanciones.h"
 #include "album.h"
+#include "eficiencia.h"
+
+void mostrarMetricasActuales(const string& etapa) {
+    long long iteraciones = MedidorEficiencia::getIteraciones();
+    long long memoria = MedidorEficiencia::getMemoriaAprox();
+
+    cout << endl << ">>> METRICAS ACUMULADAS TRAS [" << etapa << "] <<<" << endl;
+    cout << "    Iteraciones Totales: " << iteraciones << endl;
+    cout << "    Memoria Total (Aprox): " << memoria << " bytes (" << (memoria / 1024.0 / 1024.0) << " MB)" << endl;
+    cout << ">>> -------------------------------------------------- <<<\n" << endl;
+}
+
 
 int main()
 {
+    MedidorEficiencia::iniciarMedicion();
+
     srand(time(0));
 
     LecturaUsuario lector;
@@ -24,6 +38,7 @@ int main()
 
     LecturaCanciones gestorCanciones;
     gestorCanciones.cargarCanciones("canciones.txt");
+
 
     Anuncio* gestorAnuncios = nullptr;
     int totalAnuncios = 0;
@@ -36,6 +51,7 @@ int main()
     Album* gestorAlbumes = nullptr;
     int totalAlbumes = 0;
     gestorAlbumes = Album::cargarAlbumes("albumes.txt", totalAlbumes);
+    mostrarMetricasActuales("Cargar Canciones, Cargar Artistas, Cargar Usuarios, Cargar Anuncios y Cargar Albumes");
     if (totalAlbumes == 0) {
         cout << "Advertencia: No se pudo cargar 'albumes.txt'. No se mostrará info de álbum." << endl;
     }
@@ -50,12 +66,15 @@ int main()
     while(ingreso1 == true){
         int opcionIngreso;
         opcionIngreso = menuIngreso();
+
         if(opcionIngreso == 1){
             ingreso2 = true;
             bool usuValido = true;
             while(usuValido == true){
                 string* perfilUsuario = menuIngresoUsuario();
+
                 esPremium = lector.verificarUsuario(perfilUsuario);
+
                 if(esPremium == 1 || esPremium == 0){
                     usuarioActual = perfilUsuario[0];
                     usuValido = false;
@@ -66,15 +85,15 @@ int main()
 
             if(esPremium == 1){
                 Usuario* pUsuarioLogueado = lector.obtenerUsuario(usuarioActual);
+
                 while(ingreso2 == true){
                     cout << endl << endl << "--- ERES USUARIO PREMIUM ---" << endl << endl;
                     int opcionUsuPremium = menuIngresoPremium();
 
-                    if(opcionUsuPremium == 1){ // Reproduccion aleatoria
+                    if(opcionUsuPremium == 1){
                         int opcionReproduccion = menuFuncionesPremium();
+
                         if (opcionReproduccion == 1) {
-
-
                             string archivoPlaylist = usuarioActual + ".txt";
                             Playlist miPlaylist = Playlist::cargarDesdeArchivo(archivoPlaylist, 100);
 
@@ -85,25 +104,23 @@ int main()
                             }
 
                             Playlist playlistCombinada("Playlist de Reproduccion", 200);
-
                             for (int i = 0; i < miPlaylist.getNumCanciones(); i++) {
                                 playlistCombinada.agregarCancion(miPlaylist.getCancionID(i));
                             }
-
                             if (!nombreSeguido.empty()) {
                                 for (int i = 0; i < playlistSeguida.getNumCanciones(); i++) {
                                     playlistCombinada.agregarCancion(playlistSeguida.getCancionID(i));
                                 }
                             }
+                            mostrarMetricasActuales("Playlists Cargadas");
 
                             if (playlistCombinada.getNumCanciones() == 0) {
                                 cout << "No se pudo cargar tu playlist o está vacía." << endl;
                             } else {
-                                cout << "¡Iniciando playlist de reproducción (Mi Playlist + Playlist Seguida)!" << endl;
-
+                                cout << "---Iniciando playlist de reproducción (Mi Playlist + Playlist Seguida)---" << endl;
                                 int opcionPlaylist = 0;
                                 Cancion cancionActual = playlistCombinada.reproducirActual(esPremium, gestorCanciones);
-
+                                mostrarMetricasActuales("Reproducir Primera Cancion");
 
                                 do {
                                     if (cancionActual.obtenerID() != 0) {
@@ -126,19 +143,21 @@ int main()
                                             cout << "Artista: " << artista->obtenerNombre() << endl;
                                         }
                                         cout << "----------------------" << endl;
-
                                     } else {
                                         cout << "No se pudo encontrar la cancion." << endl;
                                     }
 
                                     opcionPlaylist = menuControlesRepro();
+                                    mostrarMetricasActuales("Menu Controles Repro");
 
                                     switch(opcionPlaylist) {
                                     case 1:
                                         cancionActual = playlistCombinada.siguiente(esPremium, gestorCanciones);
+                                        mostrarMetricasActuales("Siguiente Cancion");
                                         break;
                                     case 2:
                                         cancionActual = playlistCombinada.anterior(esPremium, gestorCanciones);
+                                        mostrarMetricasActuales("Cancion Anterior");
                                         break;
                                     case 3:
                                         cout << "Saliendo de la playlist..." << endl;
@@ -146,17 +165,15 @@ int main()
                                     default:
                                         cout << "Opcion invalida." << endl;
                                     }
-
                                 } while (opcionPlaylist != 3);
+                                mostrarMetricasActuales("Salir Reproduccion Playlist");
                             }
                         }
                         else if (opcionReproduccion == 2) {
-
                             char continuarAleatoria;
                             do {
                                 cout << endl << "Iniciando reproduccion aleatoria (5 canciones)..." << endl;
                                 for (int i = 0; i < 5; i++) {
-
                                     Cancion* cancionAleatoria = nullptr;
                                     do {
                                         cancionAleatoria = gestorCanciones.obtenerCancionAleatoria();
@@ -167,7 +184,6 @@ int main()
                                         cout << "No hay canciones para reproducir." << endl;
                                         break;
                                     }
-
                                     ultimoIdAleatorio = cancionAleatoria->obtenerID();
 
                                     cout << endl << "--- Cancion " << (i + 1) << "/5 ---" << endl;
@@ -190,34 +206,26 @@ int main()
                                     cout << "Ruta: " << cancionAleatoria->obtenerRutaAudio(esPremium) << endl;
                                     cout << "Reproduciendo por 3 segundos..." << endl;
 
-                                   this_thread::sleep_for(chrono::seconds(3));
-
+                                    this_thread::sleep_for(chrono::seconds(3));
                                 }
-                                cout << "\nFin de la tanda aleatoria." << endl;
+                                cout << endl << "Fin de la tanda aleatoria." << endl;
                                 cout << "¿Desea escuchar otra tanda de 5 canciones? (s/n): ";
                                 cin >> continuarAleatoria;
-
                             } while (continuarAleatoria == 's' || continuarAleatoria == 'S');
-
                             cout << "Volviendo al menu..." << endl << endl;
                         }
                         else if (opcionReproduccion == 3) {
-
                             string archivoPlaylist = usuarioActual + ".txt";
                             Playlist miPlaylist = Playlist::cargarDesdeArchivo(archivoPlaylist, 100);
-
                             string nombreSeguido = pUsuarioLogueado->obtenerUsuarioSeguido();
                             Playlist playlistSeguida;
                             if (!nombreSeguido.empty()) {
                                 playlistSeguida = Playlist::cargarDesdeArchivo(nombreSeguido + ".txt", 100);
                             }
-
                             Playlist playlistCombinada("Playlist de Reproduccion", 200);
-
                             for (int i = 0; i < miPlaylist.getNumCanciones(); i++) {
                                 playlistCombinada.agregarCancion(miPlaylist.getCancionID(i));
                             }
-
                             if (!nombreSeguido.empty()) {
                                 for (int i = 0; i < playlistSeguida.getNumCanciones(); i++) {
                                     playlistCombinada.agregarCancion(playlistSeguida.getCancionID(i));
@@ -227,14 +235,14 @@ int main()
                             if (playlistCombinada.getNumCanciones() == 0) {
                                 cout << "No se pudo cargar tu playlist o está vacía." << endl;
                             } else {
-                                cout << "¡Iniciando playlist de reproducción (Aleatoria)!" << endl;
-
+                                cout << "---Iniciando playlist de reproducción (Aleatoria)---" << endl;
                                 int opcionPlaylist = 0;
                                 Cancion cancionActual = playlistCombinada.reproducirAleatoria(esPremium, gestorCanciones);
+                                mostrarMetricasActuales("Reproducir Primera Cancion (Aleatorio)");
 
                                 do {
                                     if (cancionActual.obtenerID() != 0) {
-                                        cout << "\n--- Reproduciendo (Playlist Aleatoria) ---" << endl;
+                                        cout << endl << "--- Reproduciendo (Playlist Aleatoria) ---" << endl;
                                         long idCancionCompleto = cancionActual.obtenerID();
                                         long idArtistaBuscado = idCancionCompleto / 10000;
                                         long idAlbumBuscado = (idCancionCompleto / 100) % 100;
@@ -253,7 +261,6 @@ int main()
                                             cout << "Artista: " << artista->obtenerNombre() << endl;
                                         }
                                         cout << "----------------------" << endl;
-
                                     } else {
                                         cout << "No se pudo encontrar la cancion." << endl;
                                     }
@@ -263,9 +270,11 @@ int main()
                                     switch(opcionPlaylist) {
                                     case 1:
                                         cancionActual = playlistCombinada.reproducirAleatoria(esPremium, gestorCanciones);
+                                        mostrarMetricasActuales("Siguiente Cancion");
                                         break;
                                     case 2:
                                         cancionActual = playlistCombinada.anterior(esPremium, gestorCanciones);
+                                        mostrarMetricasActuales("Cancion Anterior");
                                         break;
                                     case 3:
                                         cout << endl << "Saliendo de la playlist..." << endl;
@@ -273,51 +282,48 @@ int main()
                                     default:
                                         cout << "Opcion invalida." << endl;
                                     }
-
                                 } while (opcionPlaylist != 3);
+                                mostrarMetricasActuales("Saliendo De Reproduccion.");
                             }
                         }
-
-
                     }
-                    else if(opcionUsuPremium == 2){ // Reproduccion por busqueda
+                    else if(opcionUsuPremium == 2){
                         char seguirRepro;
                         do{
                             long idCancion = menuBuscarCancion();
                             Cancion* cancionBuscada = gestorCanciones.buscarCancionPorID(idCancion);
 
                             if (cancionBuscada != nullptr) {
-                                    cout << "--- Reproduciendo ---" << endl;
-                                    long idCancionCompleto = cancionBuscada->obtenerID();
-                                    long idArtistaBuscado = idCancionCompleto / 10000;
-                                    long idAlbumBuscado = (idCancionCompleto / 100) % 100;
-                                    Album* albumEncontrado = Album::buscarAlbumPorIDs(gestorAlbumes, totalAlbumes, idArtistaBuscado, idAlbumBuscado);
-                                    if (albumEncontrado != nullptr) {
-                                        cout << endl << "Album: " << albumEncontrado->getNombre() << endl;
-                                        cout << "Portada: " << albumEncontrado->getPortada() << endl;
-                                    } else {
-                                        cout << "Album: (Información no disponible)" << endl;
-                                    }
-                                    cout << "ID: " << cancionBuscada->obtenerID() << endl;
-                                    cout << "Nombre: " << cancionBuscada->obtenerNombre() << endl;
-                                    cout << "Duracion: " << cancionBuscada->obtenerDuracion() << endl;
-                                    cout << "Ruta Audio: " << cancionBuscada->obtenerRutaAudio(esPremium) << endl;
-                                    Artista* artista = gestorArtistas.buscarArtistaPorID(idArtistaBuscado);
-                                    if (artista != nullptr) {
-                                        cout << endl << "Artista: " << artista->obtenerNombre() << endl << endl;
-                                    }
+                                cout << "--- Reproduciendo ---" << endl;
+                                long idCancionCompleto = cancionBuscada->obtenerID();
+                                long idArtistaBuscado = idCancionCompleto / 10000;
+                                long idAlbumBuscado = (idCancionCompleto / 100) % 100;
+                                Album* albumEncontrado = Album::buscarAlbumPorIDs(gestorAlbumes, totalAlbumes, idArtistaBuscado, idAlbumBuscado);
+                                if (albumEncontrado != nullptr) {
+                                    cout << endl << "Album: " << albumEncontrado->getNombre() << endl;
+                                    cout << "Portada: " << albumEncontrado->getPortada() << endl;
+                                } else {
+                                    cout << "Album: (Información no disponible)" << endl;
                                 }
+                                cout << "ID: " << cancionBuscada->obtenerID() << endl;
+                                cout << "Nombre: " << cancionBuscada->obtenerNombre() << endl;
+                                cout << "Duracion: " << cancionBuscada->obtenerDuracion() << endl;
+                                cout << "Ruta Audio: " << cancionBuscada->obtenerRutaAudio(esPremium) << endl;
+                                Artista* artista = gestorArtistas.buscarArtistaPorID(idArtistaBuscado);
+                                if (artista != nullptr) {
+                                    cout << endl << "Artista: " << artista->obtenerNombre() << endl << endl;
+                                }
+                            }
                             cout << endl << "¿Desea reproducir otra cancion por busqueda? (s/n): ";
                             cin >> seguirRepro;
-                            } while (seguirRepro == 's' || seguirRepro == 'S');
-
-                            cout <<  endl <<"Volviendo al menu..." << endl << endl;
-                        }
-
-                    else if(opcionUsuPremium == 3){//edicion de playlist
+                        } while (seguirRepro == 's' || seguirRepro == 'S');
+                        cout <<  endl <<"Volviendo al menu..." << endl << endl;
+                        mostrarMetricasActuales("Final De Reproduccion Por Busqueda");
+                    }
+                    else if(opcionUsuPremium == 3){
                         int opcionGestion = menuEditarPlaylist();
-                        if (opcionGestion == 1 || opcionGestion == 2) {
 
+                        if (opcionGestion == 1 || opcionGestion == 2) {
                             string archivoPlaylist = usuarioActual + ".txt";
                             Playlist miPlaylist = Playlist::cargarDesdeArchivo(archivoPlaylist, 100);
 
@@ -331,6 +337,7 @@ int main()
                                     if (miPlaylist.agregarCancion(idCancion)) {
                                         cout << endl << "Exito: Cancion '" << cancionPtr->obtenerNombre() << "' agregada a tu playlist." << endl;
                                         miPlaylist.guardarEnArchivo(archivoPlaylist);
+                                        mostrarMetricasActuales("Cancion Guardada");
                                     } else {
                                         cout << endl << "Error: No se pudo agregar la cancion (Cancion ya existente o playlist llena)." << endl;
                                     }
@@ -340,6 +347,7 @@ int main()
                                 if (miPlaylist.eliminarCancion(idCancion)) {
                                     cout << "Exito: Cancion con ID " << idCancion << " eliminada de tu playlist." << endl;
                                     miPlaylist.guardarEnArchivo(archivoPlaylist);
+                                    mostrarMetricasActuales("Cancion Eliminada");
                                 } else {
                                     cout << "Error: La cancion con ID " << idCancion << " no se encontraba en tu playlist." << endl;
                                 }
@@ -350,35 +358,36 @@ int main()
                             string userASeguir;
                             cin >> userASeguir;
                             lector.seguirUsuario(usuarioActual, userASeguir);
+                            mostrarMetricasActuales("Seguir Usuario");
                         }
                         else if (opcionGestion == 4) {
                             lector.dejarDeSeguir(usuarioActual);
+                            mostrarMetricasActuales("Dejar de Seguir Usuario");
                         }
                         else if (opcionGestion != 5) {
                             cout << "Opcion no valida." << endl;
                         }
                     }
-                    else if(opcionUsuPremium == 4){ // Opcion siendo desarrollada no aplica
+                    else if(opcionUsuPremium == 4){
                         cout << endl << "Esta opcion esta siendo desarrollada y estara disponible muy pronto." << endl;
                     }
-                    else if(opcionUsuPremium == 5){ // Volviendo al menu
+                    else if(opcionUsuPremium == 5){
                         cout << endl << "Volviendo al menu anterior..." << endl;
                         ingreso2 = false;
+                        mostrarMetricasActuales("Cerrar Sesion (Premium)");
                     }
                 }
             }
-
-
             else if (esPremium == 0){
                 while(ingreso2 == true){
                     cout << endl << endl << "--- ERES USUARIO ESTANDAR ---" << endl << endl;
                     int opcionUsuNoPremium = menuFuncionesNoPremium();
+
                     if(opcionUsuNoPremium == 1){
                         char continuarAleatoria;
                         do {
                             cout << "Iniciando reproduccion aleatoria (5 canciones)..." << endl;
                             for (int i = 0; i < 5; i++) {
-
                                 Cancion* cancionAleatoria = nullptr;
                                 do {
                                     cancionAleatoria = gestorCanciones.obtenerCancionAleatoria();
@@ -389,10 +398,9 @@ int main()
                                     cout << "No hay canciones para reproducir." << endl;
                                     break;
                                 }
-
                                 ultimoIdAleatorio = cancionAleatoria->obtenerID();
 
-                                cout << "\n--- Cancion " << (i + 1) << "/5 ---" << endl;
+                                cout << endl << "--- Cancion " << (i + 1) << "/5 ---" << endl;
                                 long idCancionCompleto = cancionAleatoria->obtenerID();
                                 long idArtistaBuscado = idCancionCompleto / 10000;
                                 long idAlbumBuscado = (idCancionCompleto / 100) % 100;
@@ -411,13 +419,11 @@ int main()
                                     cout << "Artista: " << artista->obtenerNombre() << endl;
                                 }
 
-
                                 cout << "Reproduciendo por 3 segundos..." << endl;
                                 this_thread::sleep_for(chrono::seconds(3));
 
-
                                 if ((i + 1) % 2 == 0 && totalAnuncios > 0) {
-                                    cout << "\n--- ANUNCIO ---" << endl;
+                                    cout << endl << "--- ANUNCIO ---" << endl;
                                     Anuncio* ad = Anuncio::seleccionarAleatorio(gestorAnuncios, totalAnuncios, ultimoAnuncioMostrado);
                                     if (ad != nullptr) {
                                         cout << "[" << ad->getCategoria() << "] " << ad->getTexto() << endl;
@@ -425,17 +431,15 @@ int main()
                                         this_thread::sleep_for(chrono::seconds(3));
                                     }
                                     cout << "-----------------" << endl << endl;
+                                    mostrarMetricasActuales("Mostrar Anuncio");
                                 }
-
                             }
                             cout << "\nFin de la tanda aleatoria." << endl;
                             cout << "¿Desea escuchar otra tanda de 5 canciones? (s/n): ";
                             cin >> continuarAleatoria;
-
                         } while (continuarAleatoria == 's' || continuarAleatoria == 'S');
-
                         cout << "Volviendo al menu..." << endl << endl;
-
+                        mostrarMetricasActuales("Final Tanda De canciones");
                     }
                     else if(opcionUsuNoPremium == 2){
                         cout << endl << "Esta opcion esta siendo desarrollada y estara disponible muy pronto." << endl << endl;
@@ -443,21 +447,24 @@ int main()
                     else if(opcionUsuNoPremium == 3){
                         cout << "Volviendo al menu anterior..." << endl;
                         ingreso2 = false;
+                        mostrarMetricasActuales("Cerrar Sesion (Estandar)");
                     }
                 }
             }
         }
-
-        else if(opcionIngreso == 2){ // Registro de usuarios, no aplica
+        else if(opcionIngreso == 2){
             cout << endl <<"Esta opcion esta siendo desarrollada y estara disponible muy pronto." << endl;
         }
-        else if(opcionIngreso == 3){//Salir del sistema
+        else if(opcionIngreso == 3){
             cout << endl << "Saliendo del programa..." << endl;
             ingreso1 = false;
         }
     }
 
     cout << "Gracias por usar UdeATunes." << endl;
+
+    mostrarMetricasActuales("FINAL  MEMORIA TOTAL USADA");
+
     system("pause");
     return 0;
 }
